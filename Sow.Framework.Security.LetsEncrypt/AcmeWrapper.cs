@@ -25,7 +25,7 @@ public class AcmeWrapper : IAcmeWrapper {
     private ICFDNS _cfDns;
     private long _isDisposed = 0;
     public bool IsDisposed => Interlocked.Read( ref _isDisposed ) != 0;
-    private IAcmeCtx _acmeCtx { get; set; }
+    private IAcmeCtx _contex { get; set; }
     private IAppConfig _config { get; set; }
     private IOrderContext _orderContext { get; set; }
     private readonly CancellationToken _token;
@@ -122,21 +122,28 @@ public class AcmeWrapper : IAcmeWrapper {
         };
     }
     private async Task PrepareContext( ) {
-        if ( _acmeCtx != null ) return;
-        _acmeCtx = new AcmeCtx( );
-        string pemKey = FileWorker.Read( $@"{_config.Dir}/{_acmeApiServer}_account.pem" );
-        if ( string.IsNullOrEmpty( pemKey ) ) {
-            _acmeCtx.Ctx = new AcmeContext( GetAcmeServer( ) );
-            _acmeCtx.ACtx = await _acmeCtx.Ctx.NewAccount( email: _config.CertEmail, termsOfServiceAgreed: true );
-            pemKey = _acmeCtx.Ctx.AccountKey.ToPem( );
-            FileWorker.WriteFile( pemKey, $@"{_config.Dir}/{_acmeApiServer}_account.pem" );
-            _logger.Write( $"New registration created successfully for :: {_config.CertEmail}" );
-            return;
+        if ( _contex != null ) return;
+        try {
+            _contex = new AcmeCtx( );
+            string pemKey = FileWorker.Read( $@"{_config.Dir}/{_acmeApiServer}_account.pem" );
+            if ( string.IsNullOrEmpty( pemKey ) ) {
+                _logger.Write( $"Creating account for {_config.CertEmail}" );
+                _contex.Ctx = new AcmeContext( GetAcmeServer( ) );
+                _contex.ACtx = await _contex.Ctx.NewAccount( email: _config.CertEmail, termsOfServiceAgreed: true );
+                pemKey = _contex.Ctx.AccountKey.ToPem( );
+                FileWorker.WriteFile( pemKey, $@"{_config.Dir}/{_acmeApiServer}_account.pem" );
+                _logger.Write( $"New registration created successfully for :: {_config.CertEmail}" );
+                return;
+            }
+            _logger.Write( $"Using old PEM for account {_config.CertEmail}" );
+            IKey accountKey = KeyFactory.FromPem( pemKey );
+            _contex.Ctx = new AcmeContext( GetAcmeServer( ), accountKey );
+            _contex.ACtx = await _contex.Ctx.Account( );
+            _logger.Write( $"Re-authenticated :: {_config.CertEmail}" );
+        } catch ( Exception ex ) {
+            _logger.Write( ex );
+            throw new Exception( "We are unable to create AcmeContext" );
         }
-        IKey accountKey = KeyFactory.FromPem( pemKey );
-        _acmeCtx.Ctx = new AcmeContext( GetAcmeServer( ), accountKey );
-        _acmeCtx.ACtx = await _acmeCtx.Ctx.Account( );
-        _logger.Write( "Re-authenticated :: {0}", _config.CertEmail );
         return;
     }
     public static IAppConfig GetConfig( string email, string configKey ) {
@@ -154,7 +161,7 @@ public class AcmeWrapper : IAcmeWrapper {
         if ( string.IsNullOrEmpty( fstar ) ) return false;
         Uri loc = JsonConvert.DeserializeObject<Uri>( fstar );
         if ( loc == null ) return false;
-        _orderContext = _acmeCtx.Ctx.Order( loc );
+        _orderContext = _contex.Ctx.Order( loc );
         return true;
     }
     async Task<IChalageStatus> ValidateChalage( IChallengeContext challengeCtx ) {
@@ -321,7 +328,7 @@ public class AcmeWrapper : IAcmeWrapper {
                 cert_path = certPath
             };
         } catch ( Exception e ) {
-            _logger.Write( "Error occured while read certificate for {0} :: error==>{1}", _domain.ZoneName, e.Message );
+            _logger.Write( $"Error occured while read certificate for {_domain.ZoneName}" );
             _logger.Write( e );
             return new Certificate {
                 status = false,
@@ -365,7 +372,7 @@ public class AcmeWrapper : IAcmeWrapper {
                 if ( oldCertificate.isExpired == false ) {
                     _logger.Write( "Revoke Certificate for {0} & expired on {1} and serial {2}", _domain.ZoneName, oldCertificate.Cert.NotAfter.ToShortDateString( ), oldCertificate.Cert.SerialNumber );
                     try {
-                        await _acmeCtx.Ctx.RevokeCertificate( oldCertificate.Cert.RawData, RevocationReason.Unspecified );
+                        await _contex.Ctx.RevokeCertificate( oldCertificate.Cert.RawData, RevocationReason.Unspecified );
                     } catch ( Exception r ) {
                         FileWorker.DeleteFile( oldCertificate.cert_path );
                         _logger.Write( "Error occured while Revoke Certificate for {0}; Error=>{1}", _domain.ZoneName, r.Message );
@@ -377,9 +384,9 @@ public class AcmeWrapper : IAcmeWrapper {
                 }
             }
             if ( _domain.IsWildcard ) {
-                _orderContext = await _acmeCtx.Ctx.NewOrder( new List<string> { _domain.ZoneName, _domain.DomainName } );
+                _orderContext = await _contex.Ctx.NewOrder( new List<string> { _domain.ZoneName, _domain.DomainName } );
             } else {
-                _orderContext = await _acmeCtx.Ctx.NewOrder( new List<string> { _domain.DomainName } );
+                _orderContext = await _contex.Ctx.NewOrder( new List<string> { _domain.DomainName } );
             }
             SaveNewOrder( );
             List<IChallengeCtx> challengeCtxs = new List<IChallengeCtx>( );
@@ -393,7 +400,7 @@ public class AcmeWrapper : IAcmeWrapper {
                 _logger.Write( "Authorization Context found for {0}", _domain.ZoneName );
                 foreach ( IAuthorizationContext authz in authCtx ) {
                     IChallengeContext challengeCtx = await authz.Dns( );
-                    string txt = _acmeCtx.Ctx.AccountKey.DnsTxt( challengeCtx.Token );
+                    string txt = _contex.Ctx.AccountKey.DnsTxt( challengeCtx.Token );
                     DnsTxtStore dnsTxtStore = dnsTxt.FirstOrDefault( a => a.content == txt );
                     if ( dnsTxtStore != null ) {
                         challengeCtxs.Add( new ChallengeCtx {
@@ -480,16 +487,13 @@ public class AcmeWrapper : IAcmeWrapper {
             orderResult.oldCertificate = oldCertificate.Cert;
             return orderResult;
         } catch ( Exception e ) {
-            if ( rec >= MAX_TRY ) {
-                _logger.Write( "Error occured while creating order request for {0} . Error=>{1}", _domain.ZoneName, e.Message );
-                _logger.Write( e );
-                return new OrderResult {
-                    taskType = TaskType.NOTHING,
-                    errorDescription = e.Message,
-                    success = false
-                };
-            }
-            return await CreateOrRenewCert( rec++ );
+            _logger.Write( $"Error occured while creating order request for {_domain.ZoneName}" );
+            _logger.Write( e );
+            return new OrderResult {
+                taskType = TaskType.NOTHING,
+                errorDescription = e.Message,
+                success = false
+            };
         }
     }
     private List<DnsTxtStore> GetDnsTXT( ) {
@@ -536,7 +540,7 @@ public class AcmeWrapper : IAcmeWrapper {
     public void Dispose( ) {
         if ( IsDisposed ) return;
         _ = Interlocked.Increment( ref _isDisposed );
-        _acmeCtx = null;
+        _contex = null;
         _config = null;
         _orderContext = null;
         GC.SuppressFinalize( this );

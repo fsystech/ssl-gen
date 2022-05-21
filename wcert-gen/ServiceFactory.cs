@@ -85,6 +85,8 @@ public class ServiceFactory : BackgroundService {
             ConfigKey = certConfig.ConfigKey,
             AcmeApiServer = AcmeWrapper.DefaultAcmeApiServer
         };
+        _logger.Write( $"{certConfig.ZoneName} certificate expired." );
+        _logger.Write( "We are trying to generate new ssl certificate." );
         if ( Environment.OSVersion.Platform == PlatformID.Unix ) {
             _wCartGen = new Unix( args, true, _token );
         } else {
@@ -116,7 +118,7 @@ public class ServiceFactory : BackgroundService {
         return;
     }
     public static Arguments BuildApp( string[] args ) {
-        App.Name = "LetsEncrypt SSL Cert Generator";
+        App.Name = "SSL Cert Generator (using LetsEncrypt)";
         App.UserInteractive = WindowsServiceHelpers.IsWindowsService( ) == false;
         if( App.UserInteractive ) return Arguments.Parse( args );
         IHostBuilder appBuilder = Host.CreateDefaultBuilder( args ).UseWindowsService( options => {
