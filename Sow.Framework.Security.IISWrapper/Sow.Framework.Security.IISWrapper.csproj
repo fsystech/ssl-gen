@@ -15,6 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Sow.Framework.Logger\Sow.Framework.Logger.csproj" />
+    <ProjectReference Include="..\Sow.Framework\Sow.Framework.csproj" />
   </ItemGroup>
 
 </Project>

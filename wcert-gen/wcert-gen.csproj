@@ -35,6 +35,7 @@
     <ProjectReference Include="..\Sow.Framework.Security.CloudflareWrapper\Sow.Framework.Security.CloudflareWrapper.csproj" />
     <ProjectReference Include="..\Sow.Framework.Security.IISWrapper\Sow.Framework.Security.IISWrapper.csproj" />
     <ProjectReference Include="..\Sow.Framework.Security.TaskScheduler\Sow.Framework.Security.TaskScheduler.csproj" />
+    <ProjectReference Include="..\Sow.Framework\Sow.Framework.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="config.json">

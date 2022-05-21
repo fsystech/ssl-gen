@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sow.Framework.Security.Lets
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sow.Framework.Security.TaskScheduler", "Sow.Framework.Security.TaskScheduler\Sow.Framework.Security.TaskScheduler.csproj", "{E2481C6D-9327-4245-B18E-FFA366EF6ED8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sow.Framework", "Sow.Framework\Sow.Framework.csproj", "{0A2B53F4-B901-4D95-9095-95DD65B81FE2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,10 @@ Global
 		{E2481C6D-9327-4245-B18E-FFA366EF6ED8}.Debug|x64.Build.0 = Debug|x64
 		{E2481C6D-9327-4245-B18E-FFA366EF6ED8}.Release|x64.ActiveCfg = Release|x64
 		{E2481C6D-9327-4245-B18E-FFA366EF6ED8}.Release|x64.Build.0 = Release|x64
+		{0A2B53F4-B901-4D95-9095-95DD65B81FE2}.Debug|x64.ActiveCfg = Debug|x64
+		{0A2B53F4-B901-4D95-9095-95DD65B81FE2}.Debug|x64.Build.0 = Debug|x64
+		{0A2B53F4-B901-4D95-9095-95DD65B81FE2}.Release|x64.ActiveCfg = Release|x64
+		{0A2B53F4-B901-4D95-9095-95DD65B81FE2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

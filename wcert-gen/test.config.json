@@ -1,0 +1,43 @@
+{
+  "CF_API": "https://api.cloudflare.com",
+  "CF_URI": "/client/v4/",
+  "winConfig": {
+    "WinUser": "xxxx",
+    "WinPassword": "xxx",
+  },
+  "config": [
+    {
+      "CF_AUTH_KEY": "xxxx",
+      "CF_AUTH_EMAIL": "xxx@mail.com",
+      "CertEmail": "xxx@mail.com",
+      "Dir": "",
+      "Domain": [
+        {
+          "StoreCertificate": false,
+          "StoreName": 1,
+          "CF_DNS_ZONE": "xxxxxx",
+          "ZoneName": "safeonline.world",
+          "DomainName": "*.safeonline.world",
+          "IsWildcard": true,
+          "IsSelfHost": true,
+          "appSettings": {
+            "WebServerName": "NGINX",
+            "CopyTo": "C:\\nginx\\cert\\",
+            "ExportType": [ "PFX", "PRIVATE", "FULL_CHAIN", "DER" ],
+            "Site": [],
+            "AppPool": []
+          },
+          "Csr": {
+            "CountryName": "BN",
+            "State": "Chittagong",
+            "Locality": "Asia",
+            "Organization": "Safe Onlin World Ltd.",
+            "OrganizationUnit": "500",
+            "CommonName": "*.safeonline.world"
+          }
+        }
+      ]
+    }
+
+  ]
+}
