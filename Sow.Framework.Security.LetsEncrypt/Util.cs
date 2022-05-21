@@ -12,6 +12,7 @@ sealed class Util {
     private static IGAppConfig _gConfig = null;
     public static IGAppConfig GConfig => _gConfig;
     public static string ConfigDir => "app-store";
+    public static string DefaultCertPassword => "sow_le_pkey";
     public static void Load( string physicalPath, string configKey ) {
         if ( !File.Exists( physicalPath ) )
             throw new Exception( string.Format( "No Settings file found in {0}", physicalPath ) );
@@ -32,7 +33,7 @@ sealed class Util {
                 } );
             } );
             if ( string.IsNullOrEmpty( _gConfig.CertPassword ) ) {
-                _gConfig.CertPassword = "sow_le_pkey";
+                _gConfig.CertPassword = DefaultCertPassword;
             }
             _gConfig.ConfigKey = configKey;
         } catch ( Exception e ) {

@@ -54,15 +54,10 @@ public interface IWinConfig {
     string WinUser { get; set; }
     string WinPassword { get; set; }
 }
-public class WinConfig : IWinConfig {
-    public string WinUser { get; set; }
-    public string WinPassword { get; set; }
-}
 public interface IGAppConfig {
     string ConfigKey { get; set; }
     string CloudflareAPI { get; set; }
     string CloudflareUrl { get; set; }
-    WinConfig WinCfg { get; set; }
     List<AppConfig> Config { get; set; }
     string CertPassword { get; set; }
     object SmtpSettings { get; set; }
@@ -72,7 +67,6 @@ public class GAppConfig : IGAppConfig {
     public string ConfigKey { get; set; }
     public string CloudflareAPI { get; set; }
     public string CloudflareUrl { get; set; }
-    public WinConfig WinCfg { get; set; }
     public List<AppConfig> Config { get; set; }
     public object SmtpSettings { get; set; }
     public string CertPassword { get; set; }

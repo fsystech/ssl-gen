@@ -7,13 +7,14 @@
 // Rajib Chy
 using System;
 using Sow.Framework;
+using System.Threading;
 using Sow.Framework.Files;
 using Sow.Framework.Security;
 using Sow.Framework.Security.LetsEncrypt;
 using System.Security.Cryptography.X509Certificates;
 namespace Sow.WCartGen;
 internal class Win : WCartGenBase {
-    public Win( Arguments arguments ) : base( arguments ) { }
+    public Win( Arguments arguments, bool isService = false, CancellationToken token = default( CancellationToken ) ) : base( arguments, isService, token ) { }
     protected override async void StartWork( object state ) {
         try {
             //6:10 AM 9/14/2018 Rajib
@@ -97,7 +98,6 @@ internal class Win : WCartGenBase {
                         }
                     }
                     _logger.Write( "Certificate process completed for {0}", acmeWrapper.DomainInfo.ZoneName );
-                    IWinConfig winConfig = acmeWrapper.AppConfig.WinCfg;
                     string batAbsolute = System.IO.Path.Combine( acmeWrapper.DomainDir, "ScheduleRunner.bat" );
                     if ( FileWorker.ExistsFile( batAbsolute ) ) {
                         FileWorker.DeleteFile( batAbsolute );
@@ -113,31 +113,14 @@ internal class Win : WCartGenBase {
                     FileWorker.WriteFile( bat, batAbsolute );
                     _logger.Write( ".bat file creation completed for Schedule runner for {0}", acmeWrapper.DomainInfo.ZoneName );
                     _logger.Write( "Register new Task Schedule for Renew the Certificate for {0}", acmeWrapper.DomainInfo.ZoneName );
-                    if ( winConfig == null || string.IsNullOrEmpty( winConfig.WinUser ) || string.IsNullOrEmpty( winConfig.WinPassword ) ) {
-                        _logger.Write( "We are unable to create schedule for Renew the Certificate" );
-                        _logger.Write( "No windows crediantial found in config->WinConfig" );
-                    } else {
-                        TaskSchedule.Create( settings: new ScheduleSettings {
-                            TaskName = string.Format( @"\LetsEncryptWrapper\SSL\{0}", acmeWrapper.DomainInfo.ZoneName ),
-                            TriggerDateTime = cert.NotAfter.Subtract( TimeSpan.FromDays( 1 ) ),
-                            Description = string.Format( "Register new Task Schedule for Renew the Certificate for {0}; Cert Serail::{1}", acmeWrapper.DomainInfo.ZoneName, cert.SerialNumber ),
-                            ActionPath = batAbsolute,//@"dotnet wcert_gen.dll",
-                            Arguments = null,//string.Format( "-e {0} -w {1} -fy Y", config.Email, acmeWrapper.domain.DomainName ),
-                            UserName = winConfig.WinUser,
-                            Password = winConfig.WinPassword,
-                            StartIn = App.Dir
-                        }, logger: _logger );
-                        _logger.Write( "Task Schedule Registration completed for {0}", acmeWrapper.DomainInfo.ZoneName );
-                    }
                 }
             }
             goto EXIT;
         } catch ( Exception e ) {
-            _logger.Write( e.Message );
-            _logger.Write( e.StackTrace );
+            _logger.Write( e );
             goto EXIT;
         }
         EXIT:
-        Exit( );
+        Stop( );
     }
 }

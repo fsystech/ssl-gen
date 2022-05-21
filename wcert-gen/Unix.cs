@@ -6,11 +6,12 @@
 // 10:51 AM 5/21/2022
 // Rajib Chy
 using System;
+using System.Threading;
 using Sow.Framework.Files;
 using Sow.Framework.Security.LetsEncrypt;
 namespace Sow.WCartGen;
 class Unix : WCartGenBase {
-    public Unix( Arguments arguments ) : base( arguments ) { }
+    public Unix( Arguments arguments, bool isService = false, CancellationToken token = default( CancellationToken ) ) : base( arguments, isService, token ) { }
     protected override async void StartWork( object state ) {
         try {
             Console.WriteLine( @"We are in Unix Operating system." );
@@ -67,6 +68,6 @@ class Unix : WCartGenBase {
             goto EXIT;
         }
         EXIT:
-        Exit( );
+        Stop( );
     }
 }

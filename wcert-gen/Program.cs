@@ -7,51 +7,52 @@
 // Rajib Chy
 using System;
 using Sow.Framework;
-using System.Runtime.InteropServices;
 namespace Sow.WCartGen;
+using System.Runtime.InteropServices;
 class Program {
-    static WCartGenBase _wCartGen;
+    static ICartGenerator _wCartGen;
     private static bool ConsoleCtrlCheck( CtrlTypes ctrlType ) {
         if ( _wCartGen == null ) {
-            Console.WriteLine( "Program being closed!" );
             Environment.Exit( Environment.ExitCode );
         } else {
-            _wCartGen.Exit( );
+            _wCartGen.Stop( );
         }
         return true;
     }
-    public static void Exit( ) {
+    private static void Exit( ) {
         ConsoleCtrlCheck( CtrlTypes.EVENT_EXIT );
     }
     static void Main( string[] args ) {
-        Arguments arguments = Arguments.Parse( args );
-        if ( arguments == null ) {
-            Exit( );
-            return;
-        }
-        if ( string.IsNullOrEmpty( arguments.Email ) || string.IsNullOrEmpty( arguments.Web ) ) {
-            Arguments.PrintHelp( );
-            Exit( );
-            return;
-        }
-        if ( Environment.OSVersion.Platform == PlatformID.Unix ) {
-            _wCartGen = new Unix( arguments );
-        } else {
-            if ( !App.IsWindows ) {
-                Console.WriteLine( "Not suported..." );
+        Arguments arguments = ServiceFactory.BuildApp( args );
+        if ( App.UserInteractive ) {
+            if ( arguments == null ) {
+                Exit( );
                 return;
             }
-            _wCartGen = new Win( arguments );
-            if ( Environment.UserInteractive ) {
-                SetConsoleCtrlHandler( new HandlerRoutine( ConsoleCtrlCheck ), true );
-                Console.WriteLine( "CTRL+C,CTRL+BREAK or suppress the application to exit" );
+            if ( string.IsNullOrEmpty( arguments.Email ) || string.IsNullOrEmpty( arguments.Web ) ) {
+                Arguments.PrintHelp( );
+                Exit( );
+                return;
             }
+            if ( Environment.OSVersion.Platform == PlatformID.Unix ) {
+                _wCartGen = new Unix( arguments );
+            } else {
+                if ( !App.IsWindows ) {
+                    Console.WriteLine( "Not suported..." );
+                    return;
+                }
+                _wCartGen = new Win( arguments );
+                if ( Environment.UserInteractive ) {
+                    SetConsoleCtrlHandler( new HandlerRoutine( ConsoleCtrlCheck ), true );
+                    Console.WriteLine( "CTRL+C,CTRL+BREAK or suppress the application to exit" );
+                }
+            }
+            if ( !_wCartGen.Start( ) ) return;
+            do {
+                if ( _wCartGen.Wait( 1000 ) ) break;
+            } while ( !_wCartGen.IsCancellationRequested );
+            _wCartGen.Stop( );
         }
-        if ( !_wCartGen.Start( ) ) return;
-        do {
-            if ( _wCartGen.Wait( 1000 ) ) break;
-        } while ( !_wCartGen.IsCancellationRequested );
-        _wCartGen.Exit( );
         return;
     }
     #region unmanaged

@@ -303,8 +303,8 @@ public class AcmeWrapper : IAcmeWrapper {
     }
     public ICertificate GetCertificate( ) {
         try {
-            string cert_path = string.Format( "{0}{1}.pfx", _certDir, _domain.ZoneName );
-            byte[] pfx = FileWorker.ReadAllByte( string.Format( "{0}{1}.pfx", _certDir, _domain.ZoneName ) );
+            string certPath = string.Format( "{0}{1}.pfx", _certDir, _domain.ZoneName );
+            byte[] pfx = FileWorker.ReadAllByte( certPath );
             if ( pfx == null ) {
                 return new Certificate {
                     status = false,
@@ -318,7 +318,7 @@ public class AcmeWrapper : IAcmeWrapper {
                 Cert = cert,
                 isExpired = result < 0,
                 cert_dir = _certDir,
-                cert_path = cert_path
+                cert_path = certPath
             };
         } catch ( Exception e ) {
             _logger.Write( "Error occured while read certificate for {0} :: error==>{1}", _domain.ZoneName, e.Message );

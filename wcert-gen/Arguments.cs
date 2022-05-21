@@ -8,13 +8,14 @@
 using System;
 using Sow.Framework;
 namespace Sow.WCartGen {
-    class Arguments {
+    public class Arguments {
         public string Email { get; set; }
         public string Web { get; set; }
         public bool ForceRenew { get; set; }
         public string AcmeApiServer { get; set; }
         public string ConfigKey { get; set; }
         public static Arguments Parse( string[] args ) {
+            if ( !App.UserInteractive ) return null;
             if ( args == null || args.Length == 0 ) {
                 Console.WriteLine( "Null Argument..." );
                 PrintHelp( );
@@ -34,7 +35,7 @@ namespace Sow.WCartGen {
             };
         }
         public static void PrintHelp( ) {
-            if ( !Environment.UserInteractive ) return;
+            if ( !App.UserInteractive ) return;
             string newLine = new( '-', 30 );
             Console.WriteLine( newLine );
             Console.WriteLine( "-api Acme API server. e.g. LetsEncryptV2" );

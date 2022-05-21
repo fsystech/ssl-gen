@@ -9,6 +9,8 @@ using System;
 using System.IO;
 using System.Text;
 using System.Runtime.CompilerServices;
+using System.Threading;
+
 namespace Sow.Framework;
 public class Logger : ILogger {
     bool _opening { get; set; }
@@ -23,7 +25,9 @@ public class Logger : ILogger {
     string _dir { get; set; }
     bool _iSUserInteractive { get; set; }
     bool _isHtml { get; set; }
-    int _line_count { get; set; }
+    long _line_count = 0;
+    bool IsEmpty => Interlocked.Read( ref _line_count ) == 0;
+
     bool _write_cache { get; set; }
     const int MAX_LINE = 100;
     public FileMode fileMode { get; private set; }
@@ -41,12 +45,10 @@ public class Logger : ILogger {
         if ( _ms == null || _ms.CanRead == false ) return null;
         return _ms.ToArray( );
     }
-    public MemoryStream GetLogStream( ) {
-        return _ms;
-    }
+    public MemoryStream GetLogStream( ) => _ms;
     private void WriteTofile( bool reOpen = false ) {
+        _ = Interlocked.Exchange( ref _line_count, 0 );
         try {
-            _line_count = 0;
             FileStream fs;
             if ( File.Exists( _physicalPath ) ) {
                 fs = new FileStream( _physicalPath, FileMode.Append, FileAccess.Write, FileShare.Read );
@@ -64,7 +66,7 @@ public class Logger : ILogger {
             }
         } catch ( RuntimeWrappedException e ) {
             if ( _ms == null || ( _ms != null && _ms.CanWrite == false ) ) {
-                _ms = new MemoryStream( ); _line_count = 0;
+                _ms = new MemoryStream( );
                 _closed = false;
             }
             this.Write( Encoding.UTF8.GetBytes( $"{e.Message}\n{e.StackTrace}" ) );
@@ -85,7 +87,7 @@ public class Logger : ILogger {
                 byte[] buffer = Encoding.UTF8.GetBytes( $"Log Genarte On {DateTime.Now.ToString( )}\r\n{new String( '-', 67 )}\r\n" );
                 _fs.Write( buffer, 0, buffer.Length );
             }
-            _line_count = 0;
+            _ = Interlocked.Exchange( ref _line_count, 0 );
             _closed = false;
         } catch {
             System.Threading.Thread.Sleep( 100 );
@@ -146,7 +148,7 @@ public class Logger : ILogger {
             lock ( _ms ) {
                 _ms.Write( buffer, 0, buffer.Length );
             }
-            _line_count++;
+            _ = Interlocked.Increment( ref _line_count );
             if ( _line_count > MAX_LINE ) {
                 WriteTofile( reOpen: true );
             }
@@ -159,7 +161,7 @@ public class Logger : ILogger {
             _fs.Write( buffer, 0, buffer.Length );
             if ( _write_cache == false ) _fs.Flush( );
         }
-        _line_count++;
+        _ = Interlocked.Increment( ref _line_count );
         //if ( _line_count > MAX_LINE ) this.Flush( );
     }
     private void CleanCache( ) {
@@ -216,7 +218,7 @@ public class Logger : ILogger {
     public void FlushMemory( ) {
         if ( _disposed || _closed ) return;
         if ( !_isMs ) return;
-        if ( _line_count > 0 ) {
+        if ( !IsEmpty ) {
             WriteTofile( reOpen: true );
         }
     }
@@ -239,6 +241,7 @@ public class Logger : ILogger {
         this.Close( );
         _disposed = true;
     }
+    public static string LogDate => DateTime.Now.ToString( "yyyy-MM-dd" ).Replace( "-", "_" );
 }
 public static class Extensions {
     /// <summary>
