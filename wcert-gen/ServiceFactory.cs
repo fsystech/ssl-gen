@@ -27,6 +27,7 @@ public class ServiceFactory : BackgroundService {
     private ILogger _logger;
     private CancellationToken _token;
     private ICartGenerator _wCartGen = null;
+    private bool _isFirstTime = true;
 
     private System.Timers.Timer _timer = new( );
     private readonly ICertSvcWorker _svcWorker = null;
@@ -64,10 +65,15 @@ public class ServiceFactory : BackgroundService {
             _logger.FlushMemory( );
             ThreadSafe.Exchange( ref _wCartGen, ThreadSafe.Dispose );
         } else {
-            if ( _lastCheck.Day == DateTime.Now.Day ) {
-                _logger.FlushMemory( );
-                return;
+            if( !_isFirstTime ) {
+                if ( _lastCheck.Day == DateTime.Now.Day ) {
+                    _logger.FlushMemory( );
+                    return;
+                }
+            } else {
+                _isFirstTime = false;
             }
+            _logger.Write( "Checking certificate expiration.." );
             _lastCheck = DateTime.Now;
         }
         ICertSvcConfig certConfig = _svcWorker.Validate( );

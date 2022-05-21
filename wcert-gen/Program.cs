@@ -13,6 +13,7 @@ class Program {
     static ICartGenerator _wCartGen;
     private static bool ConsoleCtrlCheck( CtrlTypes ctrlType ) {
         if ( _wCartGen == null ) {
+            Console.WriteLine( $"Stoping {App.Name}!" );
             Environment.Exit( Environment.ExitCode );
         } else {
             _wCartGen.Stop( );

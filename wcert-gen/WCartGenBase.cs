@@ -35,6 +35,8 @@ namespace Sow.WCartGen {
         public bool Wait( int millisecondsDelay ) => WaitHandler.Wait( millisecondsDelay, _tokenSource.Token );
         public void Stop( ) => Dispose( );
         public void Dispose( ) {
+            if ( IsExited ) return;
+            _ = Interlocked.Increment( ref _isExited );
             ThreadSafe.DisposeToken( _tokenSource );
             ThreadSafe.ExitThread( _th );
             _logger.Write( $"Stoping {App.Name}!" );
