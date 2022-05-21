@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Version>1.0.1</Version>
+    <Platforms>x64</Platforms>
+    <Authors>Rajib Chy</Authors>
+    <Company>Safe Online World Ltd.</Company>
+    <Description>Sow Task Scheduler</Description>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <OutputType>library</OutputType>
+    <AssemblyName>Sow.Framework.Security.TaskScheduler</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.ServiceModel.Security" Version="4.9.0" />
+    <PackageReference Include="TaskScheduler" Version="2.10.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sow.Framework.Logger\Sow.Framework.Logger.csproj" />
+  </ItemGroup>
+</Project>

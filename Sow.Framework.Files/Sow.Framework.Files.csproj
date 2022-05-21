@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Version>1.0.1</Version>
+    <Platforms>x64</Platforms>
+    <Authors>Rajib Chy</Authors>
+    <Company>Safe Online World Ltd.</Company>
+    <Description>Sow File Wrapper</Description>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <OutputType>library</OutputType>
+    <AssemblyName>Sow.Framework.Files</AssemblyName>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Version>1.0.1</Version>
+    <Platforms>x64</Platforms>
+    <Authors>Rajib Chy</Authors>
+    <Company>Safe Online World Ltd.</Company>
+    <Description>Sow LetsEncrypt Wrapper</Description>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <OutputType>library</OutputType>
+    <AssemblyName>Sow.Framework.Security.LetsEncrypt</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Certes" Version="2.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sow.Framework.Files\Sow.Framework.Files.csproj" />
+    <ProjectReference Include="..\Sow.Framework.Logger\Sow.Framework.Logger.csproj" />
+    <ProjectReference Include="..\Sow.Framework.Security.CloudflareWrapper\Sow.Framework.Security.CloudflareWrapper.csproj" />
+    <ProjectReference Include="..\Sow.Framework.Security.IISWrapper\Sow.Framework.Security.IISWrapper.csproj" />
+  </ItemGroup>
+
+</Project>

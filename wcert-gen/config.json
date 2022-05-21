@@ -1,0 +1,44 @@
+{
+  "CF_API": "https://api.cloudflare.com",
+  "CF_URI": "/client/v4/",
+  "winConfig": {
+    "WinUser": "Administrator",
+    "WinPassword": "$sow123#",
+    "xWinPassword": "$ksl$123#$%%"
+  },
+  "config": [
+    {
+      "CF_AUTH_KEY": "44b3154e351cac6974007ca79c067b326fa79",
+      "CF_AUTH_EMAIL": "mssclang@outlook.com",
+      "CertEmail": "mssclang@outlook.com",
+      "Dir": "",
+      "Domain": [
+        {
+          "StoreCertificate": false,
+          "StoreName": 1,
+          "CF_DNS_ZONE": "0ff1cb82c3181b035f4ad9e948274262",
+          "ZoneName": "kslbd.net",
+          "DomainName": "*.kslbd.net",
+          "IsWildcard": true,
+          "IsSelfHost": true,
+          "appSettings": {
+            "WebServerName": "NGINX",
+            "CopyTo": "C:\\nginx\\cert\\",
+            "ExportType": [ "PFX", "PRIVATE", "FULL_CHAIN", "DER" ],
+            "Site": [],
+            "AppPool": []
+          },
+          "Csr": {
+            "CountryName": "BN",
+            "State": "Chittagong",
+            "Locality": "Asia",
+            "Organization": "Kabir Securities Ltd.",
+            "OrganizationUnit": "500",
+            "CommonName": "*.kslbd.net"
+          }
+        }
+      ]
+    }
+
+  ]
+}
