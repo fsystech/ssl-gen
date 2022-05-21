@@ -12,13 +12,13 @@ using Sow.Framework.Security.LetsEncrypt;
 namespace Sow.WCartGen {
     internal class WCartGenBase {
         private Thread _th;
-        protected readonly IConfig _config;
         protected readonly ILogger _logger;
+        protected readonly IAppConfig _config;
         protected readonly Arguments _arguments;
         protected readonly CancellationTokenSource _tokenSource;
         public WCartGenBase( Arguments arguments ) {
             _arguments = arguments; _tokenSource = new CancellationTokenSource();
-            _config = AcmeWrapper.GetConfig( email: _arguments.email, dir: App.Dir );
+            _config = AcmeWrapper.GetConfig( email: _arguments.Email, configKey: arguments.ConfigKey );
             _logger = CreateLogger( );
         }
         protected virtual void StartWork( object state ) { }
@@ -32,8 +32,9 @@ namespace Sow.WCartGen {
         }
         public bool IsCancellationRequested => _tokenSource.IsCancellationRequested;
         public bool Start( ) {
+            _logger.Write( "Opening..." );
             if ( _config == null ) {
-                _logger.Write( string.Format( "No config found for email==>{0}", _arguments.email ) );
+                _logger.Write( string.Format( "No config found for email==>{0}", _arguments.Email ) );
                 Exit( );
                 return false;
             }
@@ -48,8 +49,6 @@ namespace Sow.WCartGen {
             } else {
                 logger.Open( string.Format( @"{0}/log/{1}.log", App.Dir, DateTime.Now.ToString( "yyyy'-'MM'-'dd" ) ) );
             }
-            logger.Write( "------------------------------" );
-            logger.Write( "Opening..." );
             return logger;
         }
     }

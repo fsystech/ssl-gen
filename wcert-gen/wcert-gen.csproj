@@ -5,7 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PlatformTarget>x64</PlatformTarget>
-    <AssemblyName>wcert-gen</AssemblyName>
+    <AssemblyName>ssl-gen</AssemblyName>
     <Version>1.0.1</Version>
     <Authors>Rajib Chy</Authors>
     <Company>Safe Online World Ltd.</Company>
@@ -39,6 +39,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="sow.config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

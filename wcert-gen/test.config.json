@@ -1,26 +1,27 @@
 {
-  "CF_API": "https://api.cloudflare.com",
-  "CF_URI": "/client/v4/",
-  "winConfig": {
-    "WinUser": "xxxx",
-    "WinPassword": "xxx",
+  "CloudflareAPI": "https://api.cloudflare.com",
+  "CloudflareUrl": "/client/v4/",
+  "CertPassword": "sow_le_pkey",
+  "WinCfg": {
+    "WinUser": null,
+    "WinPassword": null
   },
-  "config": [
+  "Config": [
     {
-      "CF_AUTH_KEY": "xxxx",
-      "CF_AUTH_EMAIL": "xxx@mail.com",
+      "CloudflareAuthKey": null,
+      "CloudflareAuthEmail": "xxx@mail.com",
       "CertEmail": "xxx@mail.com",
-      "Dir": "",
+      "Dir": null,
       "Domain": [
         {
           "StoreCertificate": false,
           "StoreName": 1,
-          "CF_DNS_ZONE": "xxxxxx",
+          "CloudflareDNSZone": "xxxxxx",
           "ZoneName": "safeonline.world",
           "DomainName": "*.safeonline.world",
           "IsWildcard": true,
           "IsSelfHost": true,
-          "appSettings": {
+          "AppSettings": {
             "WebServerName": "NGINX",
             "CopyTo": "C:\\nginx\\cert\\",
             "ExportType": [ "PFX", "PRIVATE", "FULL_CHAIN", "DER" ],

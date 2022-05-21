@@ -10,7 +10,6 @@ using System.IO;
 using System.Text;
 using System.Runtime.CompilerServices;
 namespace Sow.Framework;
-
 public class Logger : ILogger {
     bool _opening { get; set; }
     bool _isCach { get; set; }
@@ -192,16 +191,18 @@ public class Logger : ILogger {
         return;
 
     }
-    public void Write( string data, LogLevel logLevel = LogLevel.INFO ) {
+    private void _Write( string data, LogLevel logLevel ) {
         if ( _iSUserInteractive ) {
-            data = string.Concat( DateTime.Now.ToString( ), "\t\t", data, "\r\n" );
             Console.WriteLine( data );
-            //Write( Encoding.UTF8.GetBytes( data ) );
-            WriteInvoke( data );
-            return;
         }
         WriteInvoke( GetFormattedText( data, logLevel ) );
-        //Write( Encoding.UTF8.GetBytes( GetFormattedText( data, logLevel ) ) );
+    }
+    public void Write<T>( T e ) where T : Exception => Write( $"{e.Message}\r\n{e.StackTrace}", LogLevel.FATAL );
+    public void Write( string data, LogLevel logLevel = LogLevel.INFO ) {
+        string[] lines = data.Split( new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries );
+        foreach ( string line in lines ) {
+            _Write( line, logLevel );
+        }
     }
     public void Flush( ) {
         if ( _disposed || _closed ) return;

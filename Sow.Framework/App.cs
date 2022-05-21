@@ -192,9 +192,5 @@ namespace Sow.Framework {
             get => _userInteractive;
             set => _userInteractive = value;
         }
-        /// <summary>
-        /// Skip current <see cref="T:System.Diagnostics.Process"/>, kill all open <see cref="T:System.Diagnostics.Process"/> by this <see cref="T:System.Reflection.Assembly"/> Name.
-        /// </summary>
-        public static void KillMyShadow( ) => ProcHelp.KillByProcessName( App.FileName, App.Id );
     }
 }

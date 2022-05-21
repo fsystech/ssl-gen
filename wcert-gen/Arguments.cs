@@ -9,10 +9,11 @@ using System;
 using Sow.Framework;
 namespace Sow.WCartGen {
     class Arguments {
-        public string email { get; set; }
-        public string web { get; set; }
-        public bool forceRenew { get; set; }
-        public string acmeApiServer { get; set; }
+        public string Email { get; set; }
+        public string Web { get; set; }
+        public bool ForceRenew { get; set; }
+        public string AcmeApiServer { get; set; }
+        public string ConfigKey { get; set; }
         public static Arguments Parse( string[] args ) {
             if ( args == null || args.Length == 0 ) {
                 Console.WriteLine( "Null Argument..." );
@@ -25,21 +26,22 @@ namespace Sow.WCartGen {
                 return null;
             }
             return new( ) {
-                web = argv.TryGetValue( "w" ),
-                email = argv.TryGetValue( "e" ),
-                forceRenew = argv.TryGetBool( "fr" ),
-                acmeApiServer = argv.TryGetValue( "api" )
+                Web = argv.TryGetValue( "w" ),
+                Email = argv.TryGetValue( "e" ),
+                ConfigKey = argv.TryGetValue( "c" ) ?? "test",
+                ForceRenew = argv.TryGetValue( "fr" )?.ToLower( ) == "y",
+                AcmeApiServer = argv.TryGetValue( "api" )
             };
-
         }
         public static void PrintHelp( ) {
             if ( !Environment.UserInteractive ) return;
             string newLine = new( '-', 30 );
             Console.WriteLine( newLine );
             Console.WriteLine( "-api Acme API server. e.g. LetsEncryptV2" );
+            Console.WriteLine( "-c App configuration key. e.g. test" );
             Console.WriteLine( "-e myemail@mydomain.com --> Authorization Email" );
             Console.WriteLine( "-w *.mydomain.com --> Need Generate Certificate" );
-            Console.WriteLine( "-fr Y/N ---> Force Renew" );
+            Console.WriteLine( "-fr y/n ---> Force Renew" );
             Console.WriteLine( newLine );
         }
     }

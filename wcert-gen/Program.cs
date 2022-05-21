@@ -3,9 +3,10 @@
 * Copyrights licensed under the New BSD License.
 * See the accompanying LICENSE file for terms.
 */
-// 7:50 PM 9/15/2018
+// 7:50 PM 9/15/2018 update on 2:56 PM 5/21/2022
 // Rajib Chy
 using System;
+using Sow.Framework;
 using System.Runtime.InteropServices;
 namespace Sow.WCartGen;
 class Program {
@@ -28,7 +29,7 @@ class Program {
             Exit( );
             return;
         }
-        if ( string.IsNullOrEmpty( arguments.email ) || string.IsNullOrEmpty( arguments.web ) ) {
+        if ( string.IsNullOrEmpty( arguments.Email ) || string.IsNullOrEmpty( arguments.Web ) ) {
             Arguments.PrintHelp( );
             Exit( );
             return;
@@ -36,6 +37,10 @@ class Program {
         if ( Environment.OSVersion.Platform == PlatformID.Unix ) {
             _wCartGen = new Unix( arguments );
         } else {
+            if ( !App.IsWindows ) {
+                Console.WriteLine( "Not suported..." );
+                return;
+            }
             _wCartGen = new Win( arguments );
             if ( Environment.UserInteractive ) {
                 SetConsoleCtrlHandler( new HandlerRoutine( ConsoleCtrlCheck ), true );

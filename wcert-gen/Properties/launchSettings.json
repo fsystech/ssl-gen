@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "wcert-gen": {
+      "commandName": "Project",
+      "commandLineArgs": "-e mssclang@outlook.com -w *.safeonline.world -fr Y -c sow"
+    }
+  }
+}

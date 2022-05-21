@@ -1,8 +1,14 @@
-﻿//12:46 AM 9/20/2018 Rajib
+﻿/**
+* Copyright (c) 2018, Sow ( https://safeonline.world, https://www.facebook.com/safeonlineworld). (https://github.com/RKTUXYN) All rights reserved.
+* Copyrights licensed under the New BSD License.
+* See the accompanying LICENSE file for terms.
+*/
+//12:46 AM 9/20/2018
+// Rajib Chy
+using System;
+using System.Security.Principal;
+using Microsoft.Win32.TaskScheduler;
 namespace Sow.Framework.Security {
-    using System;
-    using System.Security.Principal;
-    using Microsoft.Win32.TaskScheduler;
     public class TaskSchedule {
         public static void Create( IScheduleSettings settings, ILogger logger ) {
             try {
@@ -11,12 +17,12 @@ namespace Sow.Framework.Security {
                 td.Settings.Enabled = true;
                 {
                     Task task = ts.GetTask( settings.TaskName );
-                    if (task != null) {
+                    if ( task != null ) {
 
                         var identity = WindowsIdentity.GetCurrent( );
                         var principal = new WindowsPrincipal( identity );
                         // Check to make sure account privileges allow task deletion
-                        if (!principal.IsInRole( WindowsBuiltInRole.Administrator ))
+                        if ( !principal.IsInRole( WindowsBuiltInRole.Administrator ) )
                             throw new Exception( $"Cannot delete task with your current identity '{identity.Name}' permissions level." +
                             "You likely need to run this application 'as administrator' even if you are using an administrator account." );
                         // Remove the task we just created
@@ -31,7 +37,7 @@ namespace Sow.Framework.Security {
                 // Register the task in the root folder
                 //ts.RootFolder.RegisterTaskDefinition( settings.TaskName, td );
                 ts.RootFolder.RegisterTaskDefinition( settings.TaskName, td, TaskCreation.CreateOrUpdate, settings.UserName, settings.Password, TaskLogonType.Password );
-            } catch (Exception e) {
+            } catch ( Exception e ) {
                 logger.Write( "TaskSchedule.Create Error {0}", e.Message );
                 logger.Write( e.StackTrace );
             }
