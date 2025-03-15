@@ -28,3 +28,4 @@ package-lock.json
 *.config.json
 !test.config.json
 *.launchSettings.json
+wcert-gen/Properties/launchSettings.json

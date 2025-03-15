@@ -6,7 +6,7 @@
     <Company>Safe Online World Ltd.</Company>
     <Description>Universal Framework</Description>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <OutputType>library</OutputType>
     <AssemblyName>Sow.Framework</AssemblyName>
   </PropertyGroup>
