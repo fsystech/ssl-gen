@@ -148,7 +148,7 @@ public class AcmeWrapper : IAcmeWrapper {
     }
     public static IAppConfig GetConfig( string email, string configKey ) {
         if ( Util.GConfig == null ) {
-            Util.Load( $@"{App.Dir}/{configKey}.config.json", configKey );
+            Util.Load( $@"{App.Dir}/config/{configKey}.config.json", configKey );
         }
         return Util.GConfig.Config.Find( a => a.CertEmail == email );
     }
@@ -168,7 +168,7 @@ public class AcmeWrapper : IAcmeWrapper {
         // Now let's ping the ACME service to validate the challenge token
         try {
             // We sleep 5 seconds between each request, to leave time to ACME service to refresh
-            if ( WaitHandler.Wait( 5000, _token ) ) return new ChalageStatus { status = false, errorDescription = "Task cancelled" };
+            if ( WaitHandler.Wait( 30000, _token ) ) return new ChalageStatus { status = false, errorDescription = "Task cancelled" };
             Challenge challenge = await challengeCtx.Validate( );
             if ( challenge.Status == ChallengeStatus.Invalid ) {
                 _logger.Write( "Error occured while validating acme challenge to {0} :: error==>{1}", _domain.ZoneName, challenge.Error.Detail );
@@ -182,7 +182,7 @@ public class AcmeWrapper : IAcmeWrapper {
             while ( ( ( challenge.Status == ChallengeStatus.Pending )
                 || ( challenge.Status == ChallengeStatus.Processing ) ) && ( retry < 30 ) ) {
                 // We sleep 5 seconds between each request, to leave time to ACME service to refresh
-                if ( WaitHandler.Wait( 5000, _token ) ) return new ChalageStatus { status = false, errorDescription = "Task cancelled" };
+                if ( WaitHandler.Wait( 15000, _token ) ) return new ChalageStatus { status = false, errorDescription = "Task cancelled" };
                 // We refresh the challenge object from ACME service
                 challenge = await challengeCtx.Resource( );
                 retry++;
@@ -399,6 +399,7 @@ public class AcmeWrapper : IAcmeWrapper {
                 IEnumerable<IAuthorizationContext> authCtx = await _orderContext.Authorizations( );
                 _logger.Write( "Authorization Context found for {0}", _domain.ZoneName );
                 foreach ( IAuthorizationContext authz in authCtx ) {
+                    // var hctx = await authz.Http( );
                     IChallengeContext challengeCtx = await authz.Dns( );
                     string txt = _contex.Ctx.AccountKey.DnsTxt( challengeCtx.Token );
                     DnsTxtStore dnsTxtStore = dnsTxt.FirstOrDefault( a => a.content == txt );
@@ -418,7 +419,9 @@ public class AcmeWrapper : IAcmeWrapper {
                     } );
                     if ( !cFAPIResponse.success ) {
                         orderResult.success = false;
-                        orderResult.errorDescription = JsonConvert.SerializeObject( cFAPIResponse.messages, _cfDns.jsonSettings );
+                        orderResult.errorDescription = JsonConvert.SerializeObject( cFAPIResponse.messages, _cfDns.JsonConfig );
+                        _logger.Write( $"We are unable to add text record at {_domain.ZoneName}", LogLevel.ERROR );
+                        _logger.Write( $"Cloudflare message {cFAPIResponse.messages ?? JsonConvert.SerializeObject( cFAPIResponse.errors, _cfDns.JsonConfig )}", LogLevel.WARNING );
                         break;
                     }
                     IChallengeCtx cCtx = new ChallengeCtx {
@@ -451,7 +454,7 @@ public class AcmeWrapper : IAcmeWrapper {
                 throw new NotImplementedException( "Not Implemented!!!" );
             }
             foreach ( IChallengeCtx cCtx in challengeCtxs ) {
-                if ( WaitHandler.Wait( 5000, _token ) ) {
+                if ( WaitHandler.Wait( 10000, _token ) ) {
                     orderResult.success = false;
                     orderResult.errorDescription = "Task cancelled";
                     return orderResult;

@@ -1,1 +1,1 @@
-dotnet publish -r win-x64 -c Release -o bin/win-x64/native --self-contained
+dotnet publish -r win-x64 -c Release -o bin/win-x64/native /p:PublishAot=true /p:SelfContained=true /p:PublishTrimmed=true /p:PublishReadyToRun=true /p:SingleThreadNUTC=true /p:Use64BitCompiler=true /p:InvariantGlobalization=true /p:ShortcutGenericAnalysis=true /p:IlcOptimizationPreference=Size /p:IlcOptimizationPreference=Speed

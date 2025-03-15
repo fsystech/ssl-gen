@@ -8,9 +8,8 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Runtime.CompilerServices;
 using System.Threading;
-
+using System.Runtime.CompilerServices;
 namespace Sow.Framework;
 public class Logger : ILogger {
     bool _opening { get; set; }

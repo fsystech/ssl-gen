@@ -27,3 +27,4 @@ package-lock.json
 **/win32/store/*
 *.config.json
 !test.config.json
+*.launchSettings.json
